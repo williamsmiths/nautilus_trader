@@ -9,22 +9,26 @@ from nautilus_trader.core.nautilus_pyo3.common import register
 from nautilus_trader.core.nautilus_pyo3.common import RequestCustomData
 from nautilus_trader.core.nautilus_pyo3.common import init_logging
 from nautilus_trader.core.nautilus_pyo3.common import LogLevel
+from nautilus_trader.core.nautilus_pyo3.common import LogColor
 from nautilus_trader.core.nautilus_pyo3.model import TraderId
 from nautilus_trader.core.nautilus_pyo3.core import UUID4
-
+from nautilus_trader.core.nautilus_pyo3.common import logger_log
 
 class BigBrainActor:
     def __init__(self):
         self.pos_val = 0
         self.neg_val = 0
-        self.guard = init_logging(TraderId("Test-trader"), UUID4(), level_stdout=LogLevel.DEBUG)
+        print("Initialized")
+        logger_log(LogLevel.DEBUG, LogColor.GREEN, "BigBrainActor", "Initialized")
 
     def register_handlers(self):
         register("negative_stream", self.negative_handler)
+        print("Registered handlers")
+        logger_log(LogLevel.DEBUG, LogColor.GREEN, "BigBrainActor", "Registered handlers")
 
     def negative_handler(self, val):
         self.neg_val = val
-        print(f"Received negative value: {self.neg_val}")
+        logger_log(LogLevel.DEBUG, LogColor.GREEN, "BigBrainActor", f"Received negative value: {self.neg_val}")
 
         correlation_id = UUID4()
         register_response_handler(correlation_id, self.positive_handler)
@@ -47,7 +51,7 @@ class BigBrainActor:
 
     def positive_handler(self, val):
         self.pos_val = val
-        print(f"Received positive value: {self.pos_val}")
+        logger_log(LogLevel.DEBUG, LogColor.GREEN, "BigBrainActor", f"Received positive value: {self.pos_val}")
 
         correlation_id = UUID4()
         register_response_handler(correlation_id, self.negative_handler)

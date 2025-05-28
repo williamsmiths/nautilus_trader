@@ -92,6 +92,8 @@ pub fn send(endpoint: MStr<Endpoint>, message: &dyn Any) {
     let handler = get_message_bus().borrow().get_endpoint(endpoint).cloned();
     if let Some(handler) = handler {
         handler.0.handle(message);
+    } else {
+        log::error!("Failed to find handler for endpoint: {endpoint}");
     }
 }
 

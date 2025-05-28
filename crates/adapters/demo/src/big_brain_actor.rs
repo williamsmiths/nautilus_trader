@@ -95,7 +95,7 @@ pub fn negative_handler(msg: &i32) {
     let big_brain_actor = get_actor_unchecked::<BigBrainActor>(&actor_id);
     big_brain_actor.neg_val = *msg;
 
-    println!("Received negative value: {}", big_brain_actor.neg_val);
+    log::info!("Received negative value: {}", big_brain_actor.neg_val);
 
     let correlation_id = UUID4::new();
     let handler = TypedMessageHandler::from(positive_handler);
@@ -130,7 +130,7 @@ pub fn positive_handler(msg: &i32) {
     let big_brain_actor = get_actor_unchecked::<BigBrainActor>(&actor_id);
     big_brain_actor.pos_val = *msg;
 
-    println!("Received positive value: {}", big_brain_actor.pos_val);
+    log::info!("Received positive value: {}", big_brain_actor.pos_val);
 
     let data_type = DataType::new("blah", None);
 

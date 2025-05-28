@@ -23,6 +23,7 @@ use nautilus_common::{
     messages::data::{DataCommand, DataResponse},
     msgbus::{
         self,
+        register,
         handler::{ShareableMessageHandler, TypedMessageHandler},
     },
 };
@@ -64,9 +65,10 @@ pub async fn init_data_engine(
     let data_engine = Rc::new(RefCell::new(data_engine));
 
     let data_engine_clone = data_engine;
-    let _handler = ShareableMessageHandler(Rc::new(TypedMessageHandler::from(
+    let handler = ShareableMessageHandler(Rc::new(TypedMessageHandler::from(
         move |cmd: &DataCommand| data_engine_clone.borrow_mut().execute(cmd),
     )));
+    register("data_engine".into(), handler);
 
     (http_stream, websocket_stream)
 }
@@ -97,13 +99,14 @@ impl LiveRunner {
             tokio::select! {
                 data_response = self.data_response_stream.next() => {
                     if let Some(DataResponse::Data(custom_data_response)) = data_response {
-                            println!("Received custom data response: {custom_data_response:?}");
+                            log::debug!("Received custom data response: {custom_data_response:?}");
                             let value = custom_data_response.data.downcast_ref::<i32>().copied().unwrap();
                             msgbus::response(&custom_data_response.correlation_id, &value);
                     }
                 }
                 message = self.message_stream.next() => {
                     if let Some(message) = message {
+                        log::debug!("Received message: {message}");
                         msgbus::send(endpoint, &message);
                     }
                 }
