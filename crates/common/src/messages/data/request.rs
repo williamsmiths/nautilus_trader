@@ -26,6 +26,10 @@ use nautilus_model::{
 use super::check_client_id_or_venue;
 
 #[derive(Clone, Debug)]
+#[cfg_attr(
+    feature = "python",
+    pyo3::pyclass(module = "nautilus_trader.core.nautilus_pyo3.common")
+)]
 pub struct RequestCustomData {
     pub client_id: ClientId,
     pub data_type: DataType,
