@@ -76,6 +76,7 @@ pub fn set_message_bus(msgbus: Rc<RefCell<MessageBus>>) {
 pub fn get_message_bus() -> Rc<RefCell<MessageBus>> {
     if MESSAGE_BUS.get().is_none() {
         // Initialize default message bus
+        log::debug!("Initializing default message bus");
         let msgbus = MessageBus::default();
         let msgbus = Rc::new(RefCell::new(msgbus));
         let _ = MESSAGE_BUS.set(ShareableMessageBus(msgbus.clone()));

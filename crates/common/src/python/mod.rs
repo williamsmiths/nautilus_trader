@@ -38,15 +38,16 @@ use pyo3::prelude::*;
 use crate::{
     messages::data::{DataCommand, RequestCommand, RequestCustomData},
     msgbus::{
-        get_message_bus, handler::{MessageHandler, ShareableMessageHandler}, register, register_response_handler, MStr
+        MStr, get_message_bus,
+        handler::{MessageHandler, ShareableMessageHandler},
+        register, register_response_handler,
     },
 };
 
 #[pyfunction(name = "register_response_handler")]
-pub fn py_register_response_handler(correlation_id: &str, handler: PyObject) {
-    let handler = PythonMessageHandler::new(correlation_id, handler);
+pub fn py_register_response_handler(correlation_id: UUID4, handler: PyObject) {
+    let handler = PythonMessageHandler::new(&correlation_id.to_string(), handler);
     let handler = ShareableMessageHandler::from(Rc::new(handler) as Rc<dyn MessageHandler>);
-    let correlation_id = UUID4::from(correlation_id);
     register_response_handler(&correlation_id, handler);
 }
 
@@ -57,12 +58,11 @@ impl RequestCustomData {
     pub fn py_new(
         client_id: &str,
         data_type: DataType,
-        request_id: &str,
+        request_id: UUID4,
         ts_init: u64,
         params: Option<IndexMap<String, String>>,
     ) -> Self {
         let client_id = ClientId::new(client_id);
-        let request_id = UUID4::from(request_id);
         let ts_init = UnixNanos::new(ts_init);
         Self {
             client_id,
