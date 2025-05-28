@@ -15,7 +15,9 @@ Released on TBD (UTC).
 - Added bars caching from `request_aggregated_bars` (#2649), thanks @faysou
 - Added `BacktestDataIterator` to backtest engine to provide on-the-fly data loading (#2545), thanks @faysou
 - Added support for `MarkPriceUpdate` streaming from catalog (#2582), thanks @bartolootrit
-- Added Binance Futures margin type (#2660), thanks @bartolootrit
+- Added support for Binance Futures margin type (#2660), thanks @bartolootrit
+- Added support for Binances mark price stream across all markets (#2670), thanks @sunlei
+- Added `bars_timestamp_on_close` config option for Databento which defaults to `True` to consistently align with Nautilus conventions
 - Added `activation_price` support for trailing stop orders (#2610), thanks @hope2see
 - Added trailing stops for OrderFactory bracket orders (#2654), thanks @hope2see
 - Added `raise_exception` config option for `BacktestRunConfig` (default `False` to retain current behavior) which will raise exceptions to interrupt a nodes run process
@@ -26,7 +28,7 @@ Released on TBD (UTC).
 - Added support for DEXs, pools, and tokens to blockchain adapter (#2638), thanks @filipmacek
 
 ### Breaking Changes
-None
+- Changed trailing stops to use `activation_price` rather than `trigger_price` for Binance to more closely match the Binance API conventions
 
 ### Internal Improvements
 - Added `activation_price` str and repr tests for trailing stop orders (#2620), thanks @hope2see
@@ -59,12 +61,14 @@ None
 - Improved Cython-Rust indicator parity for `SimpleMovingAverage` (SMA) (#2655), thanks @nicolad
 - Improved Cython-Rust indicator parity for `VolumeWeightedAveragePrice` (VWAP) (#2661), thanks @nicolad
 - Improved Cython-Rust indicator parity for `WeightedMovingAverage` (WMA) (#2662), thanks @nicolad
+- Improved Cython-Rust indicator parity for `ArcherMovingAveragesTrends` (AMAT) (#2669), thanks @nicolad
 - Improved zero size trade logging for Binance Futures (#2588), thanks @bartolootrit
 - Improved error handling on API key authentication errors for Polymarket
 - Improved execution client debug logging for Polymarket
 - Improved exception on deserializing order from cache database
 - Improved `None` condition checks for value types, which now raise a `TypeError` instead of an obscure `AttributeError`
 - Changed `VecDeque` for fixed-capacity `ArrayDeque` in SMA indicator (#2666), thanks @nicolad
+- Changed `VecDeque` for fixed-capacity `ArrayDeque` in LinearRegression (#2667), thanks @nicolad
 - Implemented remaining Display for orders in Rust (#2614), thanks @nicolad
 - Implemented `_subscribe_instrument` for dYdX and Bybit (#2636), thanks @davidsblom
 - Untangled `ratelimiter` quota from `python` flag (#2595), thanks @twitu
@@ -84,6 +88,7 @@ None
 - Fixed portfolio handling of `OrderExpired` events not updating state (margin requirements may change)
 - Fixed event handling for `ExecutionEngine` so it fully updates the `Portfolio` before to publishing execution events (#2513), thanks for reporting @stastnypremysl
 - Fixed PnL calculation for margin account on position flip (#2657), thanks for reporting @Egisess
+- Fixed notional value pre-trade risk check when order using quote quantity (#2628), thanks for reporting @DeevsDeevs
 - Fixed position snapshot cache access for `ExecutionEngine`
 - Fixed position snapshot `SystemError` calling `copy.deepcopy()` by simply using a `pickle` round trip to copy the position instance
 - Fixed event purging edge cases for account and position where at least one event must be guaranteed
@@ -93,6 +98,7 @@ None
 - Fixed message bus subscription matching logic in Rust (#2646), thanks @twitu
 - Fixed trailing stop market fill behavior when top-level exhausted to align with market orders (#2540), thanks for reporting @stastnypremysl
 - Fixed stop limit fill behavior on initial trigger where the limit order was continuing to fill as a taker beyond available liquidity, thanks for reporting @hope2see
+- Fixed matching engine trade processing when aggressor side is `NO_AGGRESSOR` (we can still update the matching core)
 - Fixed modifying and updating trailing stop orders (#2619), thanks @hope2see
 - Fixed processing activated trailing stop update when no trigger price, thanks for reporting @hope2see
 - Fixed terminating backtest on `AccountError` when streaming, the exception needed to be reraised to interrupt the streaming of chunks (#2546), thanks for reporting @stastnypremysl
