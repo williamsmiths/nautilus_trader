@@ -70,5 +70,6 @@ nautilus-trading = { workspace = true, features = ["python"] }
 nautilus-coinbase-intx = { workspace = true, features = ["python"] }
 nautilus-databento = { workspace = true, features = ["python"] }
 nautilus-tardis = { workspace = true, features = ["python"] }
+nautilus-demo = { workspace = true, features = ["python"] }
 
 pyo3 = { workspace = true }

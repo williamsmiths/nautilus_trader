@@ -13,7 +13,7 @@
 //  limitations under the License.
 // -------------------------------------------------------------------------------------------------
 
-use std::{cell::UnsafeCell, rc::Rc};
+use std::{cell::UnsafeCell, ffi::CString, rc::Rc};
 
 use nautilus_common::{
     actor::registry::register_actor, msgbus::get_message_bus, testing::init_logger_for_testing,
@@ -35,35 +35,53 @@ async fn run_engine() {
     let mut runner = LiveRunner::default();
     runner.new_add_data_response_stream(http_stream);
     runner.new_message_stream(websocket_stream);
+
+    let msgbus = get_message_bus();
+    println!(
+        "Is registered: {}",
+        msgbus.borrow().is_registered("negative_stream")
+    );
+    println!("endpoints: {:?}", msgbus.borrow().endpoints());
+    println!(
+        "handler: {:?}",
+        msgbus.borrow().get_endpoint("negative_stream".into())
+    );
+
     runner.run().await;
 }
 
+#[pyfunction]
 pub fn main() {
     init_logger_for_testing(None).unwrap();
     let message_bus = get_message_bus();
 
     // Initialize big brain actor
-    let big_brain_actor = BigBrainActor::new();
-    let big_brain_actor = Rc::new(UnsafeCell::new(big_brain_actor));
-    register_actor(big_brain_actor);
-    BigBrainActor::register_message_handlers();
+    // let big_brain_actor = BigBrainActor::new();
+    // let big_brain_actor = Rc::new(UnsafeCell::new(big_brain_actor));
+    // register_actor(big_brain_actor);
+    // BigBrainActor::register_message_handlers();
 
     // Initialize python actor
-    // let root = env!("CARGO_MANIFEST_DIR");
-    // let code = std::fs::read_to_string(format!("{}/src/big_brain_actor.py", root)).unwrap();
-    // let code = CString::new(code).unwrap();
-    // let filename = CString::new("big_brain_actor".to_string()).unwrap();
-    // let module = CString::new("big_brain_actor".to_string()).unwrap();
+    let root = env!("CARGO_MANIFEST_DIR");
+    let code = std::fs::read_to_string(format!("{}/src/big_brain_actor.py", root)).unwrap();
+    let code = CString::new(code).unwrap();
+    let filename = CString::new("big_brain_actor".to_string()).unwrap();
+    let module = CString::new("big_brain_actor".to_string()).unwrap();
 
-    // pyo3::prepare_freethreaded_python();
+    pyo3::prepare_freethreaded_python();
 
-    // Python::with_gil(|py| {
-    //     let pymod = PyModule::from_code(py, &code, &filename, &module).unwrap();
-    //     let test_class = pymod.getattr("BigBrainActor").unwrap();
-    //     let test_instance = test_class.call0().unwrap();
-    //     let do_method = test_instance.getattr("register_handlers").unwrap();
-    //     do_method.call0().unwrap();
-    // });
+    Python::with_gil(|py| {
+        let pymod = PyModule::from_code(py, &code, &filename, &module).unwrap();
+
+        let test_class = pymod.getattr("BigBrainActor").unwrap();
+        let test_instance = test_class.call0().unwrap();
+        let do_method = test_instance.getattr("register_handlers").unwrap();
+        do_method.call0().unwrap();
+        println!(
+            "Is registered: {}",
+            message_bus.borrow().is_registered("negative_stream")
+        );
+    });
 
     println!("Endpoints: {:?}", message_bus.borrow().endpoints());
 

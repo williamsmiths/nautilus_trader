@@ -139,6 +139,9 @@ fn nautilus_pyo3(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     sys_modules.set_item(format!("{module_name}.{n}"), m.getattr(n)?)?;
     re_export_module_attributes(m, n)?;
 
+    // Add main function
+    m.add_function(wrap_pyfunction!(nautilus_demo::main, m)?)?;
+
     Ok(())
 }
 

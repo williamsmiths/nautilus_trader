@@ -89,7 +89,11 @@ impl MockDataClient {
         let http_stream = UnboundedReceiverStream::new(http_rx);
 
         let websocket_stream = ReceiverStream::new(rx).map(|message| match message {
-            Message::Text(text) => text.parse::<i32>().unwrap(),
+            Message::Text(text) => {
+                let value = text.parse::<i32>().unwrap();
+                log::debug!("Received negative value: {value}");
+                value
+            }
             _ => unreachable!("Expected Message::Text"),
         });
 

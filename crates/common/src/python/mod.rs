@@ -27,7 +27,7 @@ pub mod signal;
 pub mod timer;
 pub mod xrate;
 
-use std::rc::Rc;
+use std::{any::TypeId, rc::Rc};
 
 use handler::PythonMessageHandler;
 use indexmap::IndexMap;
@@ -36,17 +36,22 @@ use nautilus_model::{data::DataType, identifiers::ClientId};
 use pyo3::prelude::*;
 
 use crate::{
-    messages::data::{DataCommand, RequestCommand, RequestCustomData},
+    messages::{data::{
+        DataCommand, RequestCommand, RequestCustomData, SubscribeCustomData, UnsubscribeCustomData,
+    }, SubscribeCommand, UnsubscribeCommand},
     msgbus::{
-        MStr, get_message_bus,
-        handler::{MessageHandler, ShareableMessageHandler},
-        register, register_response_handler,
+        get_message_bus, handler::{MessageHandler, ShareableMessageHandler, TypedMessageHandler}, register, register_response_handler, MStr
     },
 };
 
 #[pyfunction(name = "register_response_handler")]
 pub fn py_register_response_handler(correlation_id: UUID4, handler: PyObject) {
-    let handler = PythonMessageHandler::new(&correlation_id.to_string(), handler);
+    let handler = TypedMessageHandler::new(
+        Some(&correlation_id.to_string()),
+        move |message: &PyObject| {
+            let _ = pyo3::Python::with_gil(|py| handler.call1(py, (message,)));
+        },
+    );
     let handler = ShareableMessageHandler::from(Rc::new(handler) as Rc<dyn MessageHandler>);
     register_response_handler(&correlation_id, handler);
 }
@@ -74,6 +79,54 @@ impl RequestCustomData {
     }
 }
 
+#[pymethods]
+impl SubscribeCustomData {
+    /// Creates a new [`RequestCustomData`] instance.
+    #[new]
+    pub fn py_new(
+        client_id: &str,
+        data_type: DataType,
+        command_id: UUID4,
+        ts_init: u64,
+        params: Option<IndexMap<String, String>>,
+    ) -> Self {
+        let client_id = ClientId::new(client_id);
+        let ts_init = UnixNanos::new(ts_init);
+        Self::new(
+            Some(client_id),
+            None,
+            data_type,
+            command_id,
+            ts_init,
+            params,
+        )
+    }
+}
+
+#[pymethods]
+impl UnsubscribeCustomData {
+    /// Creates a new [`UnsubscribeCustomData`] instance.
+    #[new]
+    pub fn py_new(
+        client_id: &str,
+        data_type: DataType,
+        command_id: UUID4,
+        ts_init: u64,
+        params: Option<IndexMap<String, String>>,
+    ) -> Self {
+        let client_id = ClientId::new(client_id);
+        let ts_init = UnixNanos::new(ts_init);
+        Self::new(
+            Some(client_id),
+            None,
+            data_type,
+            command_id,
+            ts_init,
+            params,
+        )
+    }
+}
+
 #[pyfunction]
 /// Sends the `message` to the `endpoint`.
 pub fn send_request(endpoint: &str, message: RequestCustomData) {
@@ -86,12 +139,37 @@ pub fn send_request(endpoint: &str, message: RequestCustomData) {
     }
 }
 
+#[pyfunction]
+/// Sends the `message` to the `endpoint`.
+pub fn send_subscribe(endpoint: &str, message: SubscribeCustomData) {
+    // TODO: This should return a Result (in case endpoint doesn't exist)
+    let endpoint = MStr::from(endpoint);
+    let cmd = DataCommand::Subscribe(SubscribeCommand::Data(message));
+    let handler = get_message_bus().borrow().get_endpoint(endpoint).cloned();
+    if let Some(handler) = handler {
+        handler.0.handle(&cmd);
+    }
+}
+
+#[pyfunction]
+/// Sends the `message` to the `endpoint`.
+pub fn send_unsubscribe(endpoint: &str, message: UnsubscribeCustomData) {
+    // TODO: This should return a Result (in case endpoint doesn't exist)
+    let endpoint = MStr::from(endpoint);
+    let cmd = DataCommand::Unsubscribe(UnsubscribeCommand::Data(message));
+    let handler = get_message_bus().borrow().get_endpoint(endpoint).cloned();
+    if let Some(handler) = handler {
+        handler.0.handle(&cmd);
+    }
+}
+
 #[pyfunction(name = "register")]
 pub fn py_register(endpoint: &str, handler: PyObject) {
-    let endpoint = MStr::from(endpoint);
-    let handler = PythonMessageHandler::new(&endpoint, handler);
+    let handler = TypedMessageHandler::new(Some(endpoint), move |message: &PyObject| {
+        let _ = pyo3::Python::with_gil(|py| handler.call1(py, (message,)));
+    });
     let handler = ShareableMessageHandler::from(Rc::new(handler) as Rc<dyn MessageHandler>);
-    register(endpoint, handler);
+    register(endpoint.into(), handler);
 }
 
 /// Loaded as nautilus_pyo3.common
@@ -119,8 +197,12 @@ pub fn common(_: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::logging::logger::LoggerConfig>()?;
     m.add_class::<crate::logging::logger::LogGuard>()?;
     m.add_class::<crate::logging::writer::FileWriterConfig>()?;
+    m.add_class::<crate::messages::data::SubscribeCustomData>()?;
+    m.add_class::<crate::messages::data::UnsubscribeCustomData>()?;
     m.add_function(wrap_pyfunction!(py_register_response_handler, m)?)?;
     m.add_function(wrap_pyfunction!(send_request, m)?)?;
+    m.add_function(wrap_pyfunction!(send_subscribe, m)?)?;
+    m.add_function(wrap_pyfunction!(send_unsubscribe, m)?)?;
     m.add_function(wrap_pyfunction!(py_register, m)?)?;
     m.add_function(wrap_pyfunction!(logging::py_init_tracing, m)?)?;
     m.add_function(wrap_pyfunction!(logging::py_init_logging, m)?)?;

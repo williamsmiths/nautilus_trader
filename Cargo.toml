@@ -68,6 +68,7 @@ nautilus-blockchain = { path = "crates/adapters/blockchain", version = "0.48.0" 
 nautilus-coinbase-intx = { path = "crates/adapters/coinbase_intx", version = "0.48.0" }
 nautilus-databento = { path = "crates/adapters/databento", version = "0.48.0" }
 nautilus-tardis = { path = "crates/adapters/tardis", version = "0.48.0" }
+nautilus-demo = { path = "crates/adapters/demo", version = "0.48.0" }
 
 ahash = "0.8.12"
 anyhow = "1.0.98"
