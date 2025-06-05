@@ -307,6 +307,16 @@ jobs:
           arch: x64
           toolset: "14.29" # Pin for stability
 
+      - name: Fix linker PATH priority
+        shell: powershell
+        run: |
+          # Remove Git's bin directory from PATH to avoid conflict with MSVC link.exe
+          $env:PATH = ($env:PATH -split ';' | Where-Object { $_ -notlike '*Git*bin*' }) -join ';'
+          echo "PATH=$env:PATH" >> $env:GITHUB_ENV
+
+          # Verify we're using the correct linker
+          Get-Command link.exe | Select-Object Source
+
       - name: Common setup
         uses: ./.github/actions/common-setup
         with:
