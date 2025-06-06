@@ -307,27 +307,11 @@ jobs:
           arch: x64
           toolset: "14.29" # Pin for stability
 
-      - name: Check available linkers
-        shell: powershell
-        run: |
-          Write-Host "=== Checking for lld-link variants ==="
-          $rustc = Get-Command rustc
-          $rustcDir = Split-Path $rustc.Source
-          $toolchainDir = Split-Path $rustcDir
-          $binDir = Join-Path $toolchainDir "bin"
-
-          Write-Host "Rust bin directory: $binDir"
-          Get-ChildItem $binDir -Name "*lld*" | Sort-Object
-
-          Write-Host "`n=== Testing which works ==="
-          try { & lld-link --version; Write-Host "lld-link: WORKS" } catch { Write-Host "lld-link: FAILS" }
-          try { & lld-link.exe --version; Write-Host "lld-link.exe: WORKS" } catch { Write-Host "lld-link.exe: FAILS" }
-
       - name: Common setup
         uses: ./.github/actions/common-setup
         with:
           python-version: ${{ matrix.python-version }}
-          free-disk-space: "true"
+          free-disk-space: "false" # TODO: Set back to true after fix
 
       - name: Build and install wheel
         uses: ./.github/actions/common-wheel-build
