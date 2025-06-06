@@ -2,7 +2,7 @@ name: performance
 
 on:
   push:
-    branches: [nightly]
+    branches: [nightly, test-performance]
 
 jobs:
   performance-benchmarks:
@@ -42,11 +42,8 @@ jobs:
       - name: Common setup
         uses: ./.github/actions/common-setup
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           free-disk-space: "true"
-
-      - name: Run pre-commit # Runs again here to check pre-commit with Python 3.12
-        run: make pre-commit
 
       - name: Install Nautilus CLI and run init postgres
         run: |
@@ -68,7 +65,7 @@ jobs:
       - name: Build and install wheel
         uses: ./.github/actions/common-wheel-build
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           github_ref: ${{ github.ref }}
 
       # Run codspeed once only
@@ -86,7 +83,7 @@ jobs:
           cargo codspeed build -p nautilus-common -p nautilus-core -p nautilus-model -p nautilus-persistence
 
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@0010eb0ca6e89b80c88e8edaaa07cfe5f3e6664d # v3.5.0
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: cargo codspeed run -p nautilus-common -p nautilus-core -p nautilus-model -p nautilus-persistence
