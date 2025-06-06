@@ -204,6 +204,11 @@ def _build_extensions() -> list[Extension]:
         # Profiling requires special macro directives
         define_macros.append(("CYTHON_TRACE", "1"))
 
+    # Add HIGH_PRECISION definition to match Rust configuration
+    # The header uses #if !defined(HIGH_PRECISION), so we only define it when enabled
+    if HIGH_PRECISION:
+        define_macros.append(("HIGH_PRECISION", "1"))
+
     extra_compile_args = []
     extra_link_args = RUST_LIBS
 
