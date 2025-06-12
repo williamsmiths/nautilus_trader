@@ -8,55 +8,55 @@
 [![Downloads](https://pepy.tech/badge/nautilus-trader)](https://pepy.tech/project/nautilus-trader)
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white)](https://discord.gg/NautilusTrader)
 
-| Branch    | Version                                                                                                                                                                                                                     | Status                                                                                                                                                                                            |
+| Nhánh     | Phiên bản                                                                                                                                                                                                                   | Trạng thái                                                                                                                                                                                        |
 | :-------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `master`  | [![version](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnautechsystems%2Fnautilus_trader%2Fmaster%2Fversion.json)](https://packages.nautechsystems.io/simple/nautilus-trader/index.html)  | [![build](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml/badge.svg?branch=nightly)](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml) |
 | `nightly` | [![version](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnautechsystems%2Fnautilus_trader%2Fnightly%2Fversion.json)](https://packages.nautechsystems.io/simple/nautilus-trader/index.html) | [![build](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml/badge.svg?branch=nightly)](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml) |
 | `develop` | [![version](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnautechsystems%2Fnautilus_trader%2Fdevelop%2Fversion.json)](https://packages.nautechsystems.io/simple/nautilus-trader/index.html) | [![build](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/nautechsystems/nautilus_trader/actions/workflows/build.yml) |
 
-| Platform           | Rust    | Python     |
+| Nền tảng           | Rust    | Python     |
 | :----------------- | :------ | :--------- |
 | `Linux (x86_64)`   | 1.87.0+ | 3.11-3.13  |
 | `Linux (ARM64)`    | 1.87.0+ | 3.11-3.13  |
 | `macOS (ARM64)`    | 1.87.0+ | 3.11-3.13  |
 | `Windows (x86_64)` | 1.87.0+ | 3.11-3.13  |
 
-- **Docs**: <https://nautilustrader.io/docs/>
+- **Tài liệu**: <https://nautilustrader.io/docs/>
 - **Website**: <https://nautilustrader.io>
-- **Support**: [support@nautilustrader.io](mailto:support@nautilustrader.io)
+- **Hỗ trợ**: [support@nautilustrader.io](mailto:support@nautilustrader.io)
 
-## Introduction
+## Giới thiệu
 
-NautilusTrader is an open-source, high-performance, production-grade algorithmic trading platform,
-providing quantitative traders with the ability to backtest portfolios of automated trading strategies
-on historical data with an event-driven engine, and also deploy those same strategies live, with no code changes.
+NautilusTrader là một nền tảng giao dịch thuật toán mã nguồn mở, hiệu năng cao và cấp độ sản xuất,
+cung cấp cho các nhà giao dịch định lượng khả năng kiểm tra lại danh mục chiến lược giao dịch tự động
+trên dữ liệu lịch sử với engine điều khiển bằng sự kiện, và cũng triển khai những chiến lược tương tự trong môi trường thực tế mà không cần thay đổi mã.
 
-The platform is *AI-first*, designed to develop and deploy algorithmic trading strategies within a highly performant
-and robust Python-native environment. This helps to address the parity challenge of keeping the Python research/backtest
-environment consistent with the production live trading environment.
+Nền tảng này *ưu tiên AI*, được thiết kế để phát triển và triển khai các chiến lược giao dịch thuật toán trong một
+môi trường Python gốc hiệu năng cao và mạnh mẽ. Điều này giúp giải quyết thách thức đồng nhất của việc giữ môi trường
+nghiên cứu/kiểm tra lại Python nhất quán với môi trường giao dịch thực tế trong sản xuất.
 
-NautilusTrader's design, architecture, and implementation philosophy prioritizes software correctness and safety at the
-highest level, with the aim of supporting Python-native, mission-critical, trading system backtesting
-and live deployment workloads.
+Thiết kế, kiến trúc và triết lý triển khai của NautilusTrader ưu tiên tính đúng đắn và an toàn của phần mềm ở
+mức cao nhất, với mục tiêu hỗ trợ các workload kiểm tra lại hệ thống giao dịch và triển khai thực tế
+có tính chất quan trọng trong Python gốc.
 
-The platform is also universal, and asset-class-agnostic —  with any REST API or WebSocket feed able to be integrated via modular
-adapters. It supports high-frequency trading across a wide range of asset classes and instrument types
-including FX, Equities, Futures, Options, Crypto and Betting, enabling seamless operations across multiple venues simultaneously.
+Nền tảng này cũng có tính universal và bất khả tri về lớp tài sản — bất kỳ REST API hoặc WebSocket feed nào đều có thể được tích hợp thông qua các
+adapter mô-đun. Nó hỗ trợ giao dịch tần số cao trên nhiều loại tài sản và loại công cụ khác nhau
+bao gồm FX, Cổ phiếu, Hợp đồng tương lai, Quyền chọn, Crypto và Cá cược, cho phép hoạt động liền mạch trên nhiều sàn giao dịch cùng lúc.
 
 ![nautilus-trader](https://github.com/nautechsystems/nautilus_trader/raw/develop/assets/nautilus-trader.png "nautilus-trader")
 
-## Features
+## Tính năng
 
-- **Fast**: Core is written in Rust with asynchronous networking using [tokio](https://crates.io/crates/tokio).
-- **Reliable**: Rust-powered type- and thread-safety, with optional Redis-backed state persistence.
-- **Portable**: OS independent, runs on Linux, macOS, and Windows. Deploy using Docker.
-- **Flexible**: Modular adapters mean any REST API or WebSocket feed can be integrated.
-- **Advanced**: Time in force `IOC`, `FOK`, `GTC`, `GTD`, `DAY`, `AT_THE_OPEN`, `AT_THE_CLOSE`, advanced order types and conditional triggers. Execution instructions `post-only`, `reduce-only`, and icebergs. Contingency orders including `OCO`, `OUO`, `OTO`.
-- **Customizable**: Add user-defined custom components, or assemble entire systems from scratch leveraging the [cache](https://nautilustrader.io/docs/latest/concepts/cache) and [message bus](https://nautilustrader.io/docs/latest/concepts/message_bus).
-- **Backtesting**: Run with multiple venues, instruments and strategies simultaneously using historical quote tick, trade tick, bar, order book and custom data with nanosecond resolution.
-- **Live**: Use identical strategy implementations between backtesting and live deployments.
-- **Multi-venue**: Multiple venue capabilities facilitate market-making and statistical arbitrage strategies.
-- **AI Training**: Backtest engine fast enough to be used to train AI trading agents (RL/ES).
+- **Nhanh**: Core được viết bằng Rust với mạng bất đồng bộ sử dụng [tokio](https://crates.io/crates/tokio).
+- **Đáng tin cậy**: An toàn về kiểu và luồng được hỗ trợ bởi Rust, với tùy chọn lưu trữ trạng thái Redis.
+- **Di động**: Độc lập với hệ điều hành, chạy trên Linux, macOS và Windows. Triển khai sử dụng Docker.
+- **Linh hoạt**: Adapter mô-đun có nghĩa là bất kỳ REST API hoặc WebSocket feed nào đều có thể được tích hợp.
+- **Nâng cao**: Time in force `IOC`, `FOK`, `GTC`, `GTD`, `DAY`, `AT_THE_OPEN`, `AT_THE_CLOSE`, các loại lệnh nâng cao và trigger điều kiện. Chỉ thị thực thi `post-only`, `reduce-only`, và icebergs. Lệnh ngẫu nhiên bao gồm `OCO`, `OUO`, `OTO`.
+- **Có thể tùy chỉnh**: Thêm các component tùy chỉnh do người dùng định nghĩa, hoặc lắp ráp toàn bộ hệ thống từ đầu tận dụng [cache](https://nautilustrader.io/docs/latest/concepts/cache) và [message bus](https://nautilustrader.io/docs/latest/concepts/message_bus).
+- **Kiểm tra lại**: Chạy với nhiều sàn giao dịch, công cụ và chiến lược đồng thời sử dụng dữ liệu lịch sử về quote tick, trade tick, bar, order book và dữ liệu tùy chỉnh với độ phân giải nanosecond.
+- **Thực tế**: Sử dụng cùng implementation chiến lược giữa kiểm tra lại và triển khai thực tế.
+- **Đa sàn giao dịch**: Khả năng đa sàn giao dịch tạo điều kiện cho chiến lược tạo thị trường và arbitrage thống kê.
+- **Đào tạo AI**: Engine kiểm tra lại đủ nhanh để được sử dụng để đào tạo các agent giao dịch AI (RL/ES).
 
 ![Alt text](https://github.com/nautechsystems/nautilus_trader/raw/develop/assets/nautilus-art.png "nautilus")
 
@@ -65,23 +65,23 @@ including FX, Equities, Futures, Options, Crypto and Betting, enabling seamless 
 > *The nautilus shell consists of modular chambers with a growth factor which approximates a logarithmic spiral.
 > The idea is that this can be translated to the aesthetics of design and architecture.*
 
-## Why NautilusTrader?
+## Tại sao chọn NautilusTrader?
 
-- **Highly performant event-driven Python**: Native binary core components.
-- **Parity between backtesting and live trading**: Identical strategy code.
-- **Reduced operational risk**: Enhanced risk management functionality, logical accuracy, and type safety.
-- **Highly extendable**: Message bus, custom components and actors, custom data, custom adapters.
+- **Python điều khiển sự kiện hiệu năng cao**: Các component core native binary.
+- **Tính nhất quán giữa kiểm tra lại và giao dịch thực tế**: Mã chiến lược giống hệt nhau.
+- **Giảm rủi ro vận hành**: Chức năng quản lý rủi ro nâng cao, độ chính xác logic và an toàn về kiểu.
+- **Khả năng mở rộng cao**: Message bus, component và actor tùy chỉnh, dữ liệu tùy chỉnh, adapter tùy chỉnh.
 
-Traditionally, trading strategy research and backtesting might be conducted in Python
-using vectorized methods, with the strategy then needing to be reimplemented in a more event-driven way
-using C++, C#, Java or other statically typed language(s). The reasoning here is that vectorized backtesting code cannot
-express the granular time and event dependent complexity of real-time trading, where compiled languages have
-proven to be more suitable due to their inherently higher performance, and type safety.
+Theo truyền thống, nghiên cứu chiến lược giao dịch và kiểm tra lại có thể được tiến hành bằng Python
+sử dụng các phương pháp vector hóa, với chiến lược sau đó cần phải được triển khai lại theo cách điều khiển sự kiện hơn
+sử dụng C++, C#, Java hoặc các ngôn ngữ tĩnh khác. Lý do ở đây là mã kiểm tra lại vector hóa không thể
+biểu hiện sự phức tạp chi tiết phụ thuộc vào thời gian và sự kiện của giao dịch thời gian thực, nơi các ngôn ngữ biên dịch đã
+được chứng minh là phù hợp hơn do hiệu năng vốn có cao hơn và an toàn về kiểu.
 
-One of the key advantages of NautilusTrader here, is that this reimplementation step is now circumvented - as the critical core components of the platform
-have all been written entirely in [Rust](https://www.rust-lang.org/) or [Cython](https://cython.org/).
-This means we're using the right tools for the job, where systems programming languages compile performant binaries,
-with CPython C extension modules then able to offer a Python-native environment, suitable for professional quantitative traders and trading firms.
+Một trong những lợi thế chính của NautilusTrader ở đây, là bước triển khai lại này hiện được tránh khỏi - vì các component core quan trọng của nền tảng
+đã được viết hoàn toàn bằng [Rust](https://www.rust-lang.org/) hoặc [Cython](https://cython.org/).
+Điều này có nghĩa là chúng ta đang sử dụng đúng công cụ cho công việc, nơi các ngôn ngữ lập trình hệ thống biên dịch binary hiệu năng,
+với các module mở rộng CPython C sau đó có thể cung cấp môi trường Python gốc, phù hợp cho các nhà giao dịch định lượng chuyên nghiệp và công ty giao dịch.
 
 ## Why Python?
 

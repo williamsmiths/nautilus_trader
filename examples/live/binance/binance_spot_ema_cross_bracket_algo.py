@@ -14,7 +14,12 @@
 #  limitations under the License.
 # -------------------------------------------------------------------------------------------------
 
+import os
 from decimal import Decimal
+from dotenv import load_dotenv
+
+# Load environment variables từ .env file
+load_dotenv()
 
 from nautilus_trader.adapters.binance import BINANCE
 from nautilus_trader.adapters.binance import BinanceAccountType
@@ -51,25 +56,25 @@ config_node = TradingNodeConfig(
     ),
     data_clients={
         BINANCE: BinanceDataClientConfig(
-            api_key=None,  # 'BINANCE_API_KEY' env var
-            api_secret=None,  # 'BINANCE_API_SECRET' env var
+            api_key=os.getenv('BINANCE_API_KEY'),  # Load từ .env file
+            api_secret=os.getenv('BINANCE_API_SECRET'),  # Load từ .env file
             account_type=BinanceAccountType.SPOT,
             base_url_http=None,  # Override with custom endpoint
             base_url_ws=None,  # Override with custom endpoint
             us=False,  # If client is for Binance US
-            testnet=False,  # If client uses the testnet
+            testnet=True,  # If client uses the testnet
             instrument_provider=InstrumentProviderConfig(load_all=True),
         ),
     },
     exec_clients={
         BINANCE: BinanceExecClientConfig(
-            api_key=None,  # 'BINANCE_API_KEY' env var
-            api_secret=None,  # 'BINANCE_API_SECRET' env var
+            api_key=os.getenv('BINANCE_API_KEY'),  # Load từ .env file
+            api_secret=os.getenv('BINANCE_API_SECRET'),  # Load từ .env file
             account_type=BinanceAccountType.SPOT,
             base_url_http=None,  # Override with custom endpoint
             base_url_ws=None,  # Override with custom endpoint
             us=False,  # If client is for Binance US
-            testnet=False,  # If client uses the testnet
+            testnet=True,  # If client uses the testnet
             instrument_provider=InstrumentProviderConfig(load_all=True),
             max_retries=3,
             retry_delay_initial_ms=1_000,
